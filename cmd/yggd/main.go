@@ -27,9 +27,10 @@ import (
 )
 
 var (
-	ClientID   = ""
-	SocketAddr = ""
-	UserAgent  = yggdrasil.LongName + "/" + yggdrasil.Version
+	ClientID                       = ""
+	SocketAddr                     = ""
+	UserAgent                      = yggdrasil.LongName + "/" + yggdrasil.Version
+	ExcludeWorkers map[string]bool = map[string]bool{}
 )
 
 func main() {
@@ -102,6 +103,10 @@ func main() {
 			Value:  fmt.Sprintf("@yggd-dispatcher-%v", randomString(6)),
 			Hidden: true,
 		},
+		altsrc.NewStringSliceFlag(&cli.StringSliceFlag{
+			Name:  "exclude-worker",
+			Usage: "Exclude `WORKER` from activation when starting workers",
+		}),
 	}
 
 	// This BeforeFunc will load flag values from a config file only if the
@@ -193,6 +198,9 @@ func main() {
 
 		ClientID = string(clientID)
 		SocketAddr = c.String("socket-addr")
+		for _, worker := range c.StringSlice("exclude-worker") {
+			ExcludeWorkers[worker] = true
+		}
 
 		// Read certificates, create a TLS config, and initialize HTTP client
 		var certData, keyData []byte
@@ -330,6 +338,9 @@ func main() {
 			config, err := loadWorkerConfig(filepath.Join(workerPath, info.Name()))
 			if err != nil {
 				log.Errorf("cannot load worker config: %v", err)
+				continue
+			}
+			if ExcludeWorkers[config.directive] {
 				continue
 			}
 			go func() {
