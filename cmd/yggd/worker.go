@@ -60,6 +60,11 @@ func startWorker(config workerConfig, started func(pid int), stopped func(pid in
 		"YGG_CONFIG_DIR=" + filepath.Join(yggdrasil.SysconfDir, yggdrasil.LongName),
 		"YGG_LOG_LEVEL=" + log.CurrentLevel().String(),
 		"YGG_CLIENT_ID=" + ClientID,
+		"http_proxy=" + os.Getenv("http_proxy"),
+		"HTTP_PROXY=" + os.Getenv("HTTP_PROXY"),
+		"HTTPS_PROXY=" + os.Getenv("HTTPS_PROXY"),
+		"ALL_PROXY=" + os.Getenv("ALL_PROXY"),
+		"NO_PROXY=" + os.Getenv("NO_PROXY"),
 	}
 
 	switch config.Protocol {
