@@ -104,8 +104,8 @@ The following table includes valid fields for a worker configuration file:
 | **Field**  | **Value** | **Description** |
 | ---------- | --------- | --------------- |
 | `exec`     | `string`  | Path to an executable that is assumed to be the worker program (required). |
-| `protocol` | `string` | RPC protocol the worker is using to communicate with`yggd`. Currently, only "grpc" is supported. |
-| `env`      | `array`  | Any additional values that a worker needs injected into its runtime enviroment before starting up. `PATH` and `YGG_SOCKET_ADDR` are forbidden and may not be overridden. |
+| `protocol` | `string`  | RPC protocol the worker is using to communicate with`yggd`. Currently, only "grpc" is supported. |
+| `env`      | `array`   | Any additional values that a worker needs injected into its runtime enviroment before starting up. `PATH` and all variables beginning with `YGG_` are forbidden and may not be overridden. |
 
 An example of a worker configuration file can be see in the example `echo`
 worker directory: `./workers/echo/config.toml`.

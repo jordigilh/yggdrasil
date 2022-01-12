@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -72,16 +73,6 @@ func startWorker(config workerConfig, started func(pid int), stopped func(pid in
 		env = append(env, "YGG_SOCKET_ADDR=unix:"+SocketAddr)
 	default:
 		return fmt.Errorf("unsupported protocol: %v", config.Protocol)
-	}
-
-	validEnvVar := func(val string) bool {
-		for _, variable := range []string{"PATH=", "YGG_SOCKET_ADDR="} {
-			if strings.HasPrefix(val, variable) {
-				return false
-			}
-		}
-
-		return true
 	}
 
 	for _, val := range config.Env {
@@ -257,4 +248,15 @@ func watchWorkerDir(dir string, died chan int) {
 func workerExists(name string) bool {
 	_, err := os.Stat(filepath.Join(yggdrasil.SysconfDir, yggdrasil.LongName, "workers", name+".toml"))
 	return !os.IsNotExist(err)
+}
+
+func validEnvVar(val string) bool {
+	for _, pattern := range []string{"PATH=.*", "YGG_.*=.*"} {
+		r := regexp.MustCompile(pattern)
+		if r.Match([]byte(val)) {
+			return false
+		}
+	}
+
+	return true
 }
