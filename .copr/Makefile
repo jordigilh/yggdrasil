@@ -21,8 +21,8 @@ srpm: TOPICPREFIX = $(SHORTNAME)
 srpm: DATAHOST = ""
 endif
 
-.PHONY: srpm
-srpm: deps
+.PHONY: srpm _srpm deps
+_srpm: 
 	sed \
 	    -e 's,[@]SHORTNAME[@],$(SHORTNAME),g' \
 		-e 's,[@]LONGNAME[@],$(LONGNAME),g' \
@@ -48,6 +48,8 @@ srpm: deps
 	install -D -m644 $(PKGNAME)-$(VERSION)-$(RELEASE).tar.gz $(SOURCEDIR)/
 	rpmbuild -bs $(spec)/yggdrasil.spec
 	install -D -m644 $(SRCRPMDIR)/*.rpm $(outdir)/
+
+srpm: deps _srpm
 
 deps:
 	dnf install -y golang git
